@@ -65,11 +65,11 @@ def init_db():
                     created_at TIMESTAMP DEFAULT NOW()
                 );
             """)
-            from passlib.context import CryptContext
-            pwd = CryptContext(schemes=["bcrypt"])
+            import bcrypt as _bcrypt
+            hashed = _bcrypt.hashpw(b"demo1234", _bcrypt.gensalt()).decode()
             cur.execute("""
                 INSERT INTO users (email, password_hash, name, org, role)
                 VALUES (%s, %s, %s, %s, %s)
                 ON CONFLICT (email) DO NOTHING
-            """, ("demo@nexora.ai", pwd.hash("demo1234"), "Demo Analyst", "Nexora Demo", "analyst"))
+            """, ("demo@nexora.ai", hashed, "Demo Analyst", "Nexora Demo", "analyst"))
     print("Database initialized.")

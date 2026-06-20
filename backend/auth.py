@@ -1,18 +1,17 @@
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+import bcrypt as _bcrypt
 import os
 
 SECRET = os.environ.get("JWT_SECRET", "dev-secret-change-in-prod")
 ALGORITHM = "HS256"
 EXPIRE_HOURS = 24
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    return _bcrypt.hashpw(password.encode(), _bcrypt.gensalt()).decode()
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+    return _bcrypt.checkpw(plain.encode(), hashed.encode())
 
 def create_token(data: dict) -> str:
     payload = data.copy()
